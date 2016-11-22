@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <appender name="stdout" class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%-20(%d{yyyy-MM-dd HH:mm:ss} [%thread]) %-5level - %msg%n</pattern>
+        </layout>
+    </appender>
+
+    <appender name="file" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>../cocoLogs/coco7.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>../cocoLogs/coco7.%d{yyyy-MM-dd}.log.zip</fileNamePattern>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>%-20(%d{yyyy-MM-dd HH:mm:ss} [%thread]) %-5level - %msg%n</pattern>
+        </layout>
+    </appender>
+    <root level="DEBUG">
+        <appender-ref ref="stdout"/>
+        <appender-ref ref="file" />
+    </root>
+</configuration>

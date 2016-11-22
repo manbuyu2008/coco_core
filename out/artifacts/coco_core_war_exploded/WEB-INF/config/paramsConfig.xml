@@ -1,0 +1,76 @@
+<?xml version = '1.0' encoding='UTF-8' ?>
+<coco title="人力资源管理系统" version="1.0.20130101">
+    <server-config desc="系统配置">
+        <server uuid="00" desc="服务器序号，多服务器时，每服务器唯一编号"/>
+        <!--附件设置 type-保存方式 ftp/file -->
+        <attach type="file" title="配置附件服务器及附件模式信息">
+            <!--文件夹方式 path-保存路径-->
+            <file path="c:/temp"/>
+            <!--ftp方式-->
+            <!--<ftp ip="127.0.0.1" port="21" user="demo" password="demo"/>-->
+        </attach>
+        <!--短信猫设置
+          turn-0 - 关闭 /1-支持
+          port-com口，值形如COM1  必须
+          baudRate-传输速率，默认9600
+          dataBits-每个字节的标准数据位长度，默认为SerialPort.DATABITS_8
+          stopBits-每个字节的标准停止位数，默认为SerialPort.STOPBITS_1
+          parity-奇偶校验检查协议，默认为SerialPort.PARITY_NONE-->
+        <sms turn="0" port="COM1"/>
+        <!--
+        邮件设置 turn-0 - 关闭 /1-支持
+          host 邮件服务器主机  如：mail.72ec.com
+          port 邮件服务器端口 默认25
+          userName 邮件登录用户名 如：zhenggm@72ec.com
+          pwd 邮件登录密码 如：123456
+          fromAddr 发送者邮箱地址，如：zhenggm@72ec.com
+          fromName 通用的发送者名称，如：老郑
+          charset 字符集，默认GBK
+          encoding 编码方式 编码方式有两种："B"代表Base64、"Q"代表QP（quoted-printable）方式，可选
+          -->
+        <email turn="0"/>
+        <!--接口配置，参见IntfFactory.java-->
+        <intf title="配置缓存信息">
+            <!--系统参数控制类-->
+            <param>org.eabax.plugin.system.security.ControlParam</param>
+            <!--部门buffer-->
+            <dept>org.eabax.plugin.system.organization.dept.DeptBuffer</dept>
+            <!--人员 -->
+            <person>org.eabax.plugin.system.organization.person.PersonBuffer</person>
+            <!--登录帐号 -->
+            <user>org.eabax.plugin.system.security.user.SysUserBuffer</user>
+            <!--角色-->
+            <role>org.eabax.plugin.system.security.role.SysRoleBuffer</role>
+            <!--流程引擎处理类-->
+            <flow>org.eabax.plugin.system.workflow.engine.FlowAdapterEngine</flow>
+        </intf>
+        <web title="web配置信息">
+            <!--main底部显示定义 允许元素：
+            [userCode]  用户编号
+            [userName]  用户名
+            [roleName]  角色名
+            [corpName]  机构名
+            [corpCode]  机构编号
+            [deptCode]  部门编号
+            [deptName]  部门名
+            [linkWay]   技术支持
+            [workDate] 登录日期
+            [loginTime] 登录系统时间
+            -->
+            <bottom>操作员：[userName]([userCode]) | 角色：[roleName] | 所属机构：[corpName] | 技术支持：[linkWay]</bottom>
+            <!--欢迎页面欢迎信息定义-->
+            <welcom>欢迎您，[userName]([userCode]) [登录日期：[workDate] ([loginTime]登录)]</welcom>
+            <portal desc="门户首页">portal/list</portal>
+            <login desc="登录页面jsp">/jsp/core/main/login.jsp</login>
+        </web>
+    </server-config>
+    <!--属性访问方式：
+      返回String ParamsConfig.getInstance().getPropertyValue("key")
+      返回Boolean ParamsConfig.getInstance().getPropertyBoolValue("key") true/1时返回true
+      -->
+    <properites-config>
+        <property key="isLoginVerify" value="true" desc="验证码是否需要"/>
+        <property key="isCollapsed" value="true" desc="查询条件默认收缩"/>
+        <property key="copyRight" value="Copyright © 1998 - 2015 coco. All Rights Reserved. " desc="页底版权说明"/>
+    </properites-config>
+</coco>

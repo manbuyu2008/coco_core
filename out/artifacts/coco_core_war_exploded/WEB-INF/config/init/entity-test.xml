@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<entity-model catalog="sys_test">
+    <entity version="2" name="SYS_Privilege" caption="授权表">
+        <fields>
+            <field caption="ID" name="ID" type="S" len="20" notNull="Y"/>
+            <field caption="授权主体" name="MASTER" type="N" len="2" notNull="Y" des="1|用户 2|角色"/>
+            <field caption="主体ID" name="MASTERID" type="S" len="20" notNull="Y"/>
+            <field caption="菜单ID" name="MENUID"   type="S" len="20" notNull="Y"/>
+            <field caption="启用按钮IDS" name="BUTTONIDS" type="S" len="255" />
+            <field caption="授权人" name="userID" type="S" len="20" notNull="Y"/>
+        </fields>
+        <constraints>
+            <pk name="PK_SYS_Privilege">
+                <field name="ID"/>
+            </pk>
+        </constraints>
+    </entity>
+
+    <entity version="1" name="SYS_MENU" caption="系统菜单">
+        <fields>
+            <field caption="ID" name="ID" type="S" len="20" notNull="Y"/>
+            <field caption="编码" name="CODE" type="S" len="20" notNull="Y"/>
+            <field caption="名称" name="NAME" type="S" len="255" notNull="Y"/>
+            <field caption="上级ID" name="PARENTID" type="S" len="20" notNull="Y"/>
+            <field caption="级次" name="LEVELNUM" type="N" len="9" notNull="Y"/>
+            <field caption="级次编码" name="LEVELCODE" type="S" len="255" notNull="Y"/>
+            <field caption="排序" name="MENUORDER" type="N" len="2" notNull="Y" DEFAULT="1"/>
+            <field caption="是否根节点" name="ISLEAF" type="N" len="2" notNull="Y" DEFAULT="1"/>
+            <field caption="URL" name="MENUURL"  type="S" len="255" notNull="Y"/>
+            <field caption="Icon" name="MENUIcon" type="S" len="255" notNull="Y"/>
+            <field caption="是否启用" name="STATUS"  type="N" len="2" notNull="Y" DEFAULT="1"/>
+            <field caption="按钮IDS" name="BUTTONIDS" type="S" len="255" />
+            <field caption="备注" name="NOTE" type="S" len="255"/>
+        </fields>
+        <constraints>
+            <pk name="PK_SYS_MENU">
+                <field name="ID"/>
+            </pk>
+            <unique name="U_SYS_MENU_CODE">
+                <field name="CODE"/>
+            </unique>
+        </constraints>
+    </entity>
+
+    <entity version="1" name="SYS_BUTTON" caption="系统操作按钮">
+        <fields>
+            <field caption="ID" name="ID" type="S" len="20" notNull="Y"/>
+            <field caption="编码" name="CODE" type="S" len="20" notNull="Y"/>
+            <field caption="名称" name="NAME" type="S" len="255" notNull="Y"/>
+            <field caption="Icon" name="btnIcon" type="S" len="255" notNull="Y"/>
+            <field caption="method" name="methodName" type="S" len="100" notNull="Y"/>
+            <field caption="是否启用" name="STATUS"  type="N" len="2" notNull="Y" DEFAULT="1"/>
+            <field caption="备注" name="NOTE" type="S" len="255"/>
+        </fields>
+        <constraints>
+            <pk name="PK_SYS_BUTTON">
+                <field name="ID"/>
+            </pk>
+            <unique name="U_SYS_BUTTON_CODE">
+                <field name="CODE"/>
+            </unique>
+        </constraints>
+    </entity>
+
+</entity-model>

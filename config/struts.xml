@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.1//EN" "http://struts.apache.org/dtds/struts-2.1.dtd">
+<struts>	
+	 <constant name="struts.i18n.encoding" value="UTF-8"/>
+	 		<!-- 指定默认编码集 ，作用于HttpServletRequest的setCharacterEncoding（）和freemarker，vilocity的输出 -->
+    <!-- 当struts配置文件修改时是否自动加载 -->
+    <constant name="struts.devMode" value="false"/>
+    <constant name="struts.enable.SlashesInActionNames" value="true"/>
+	<constant name="struts.configuration.xmlreload" value="true"/>
+
+			<!-- 开发模式下打印详细的错误信息 -->
+	<constant name="struts.ui.theme" value="xhtml"/>
+    <package name="coco-default" extends="json-default">
+        <!--全局result-->
+        <global-results>
+            <result name="login" type="redirect">login</result>
+            <result name="error">/jsp/core/error.jsp</result>
+            <result name="JSON" type="json">
+                <param name="root">map</param>
+            </result>
+        </global-results>
+        <!-- 全局性的异常映射 -->
+        <global-exception-mappings>
+            <exception-mapping exception="java.lang.Exception" result="error"/>
+        </global-exception-mappings>
+    </package>
+
+
+    <!--应用插件应该集成该package-->
+    <package name="coco" extends="coco-default">
+        <interceptors>
+            <!--基于平台的全局拦截器-->
+            <interceptor name="coco-default" class="com.coco.init.Interceptor"/>
+            <interceptor-stack name="coco_inter">
+                <interceptor-ref name="defaultStack"/>
+                <interceptor-ref name="coco-default"/>
+            </interceptor-stack>
+        </interceptors>
+        <default-interceptor-ref name="coco_inter"/>
+    </package>
+
+    <package name="coco-login"   extends="coco-default">
+        <action name="login" class="com.coco.key.login.LoginAction" method="doLogin">
+            <result name="success">/jsp/core/login/login.jsp</result>
+        </action>
+        <action name="verifyCode" class="com.coco.key.login.LoginAction" method="doVerifyCode">
+         <result/>
+        </action>
+        <action name="userLogin" class="com.coco.key.login.LoginAction" method="userLogin">
+        </action>
+        <action name="logout" class="com.coco.key.login.LoginAction" method="logout">
+        </action>
+    </package>
+
+	<package name="core"  extends="coco">
+        <action name="index" class="com.coco.key.index.IndexAction" method="index">
+            <result name="success">/jsp/core/index/index.jsp</result>
+        </action>
+        <action name="pwdChg" class="com.coco.key.index.IndexAction" method="pwdChg"></action>
+        <action name="*/*/*/*" class="com.coco.{1}.{2}.{3}Action" method="{4}">
+            <result name="success">/jsp/{1}/base/{2}/{4}{3}.jsp</result>
+        </action>
+	</package>
+</struts>    

@@ -1,0 +1,179 @@
+-- Create table
+create table SYS_USER
+(
+  USER_ID     VARCHAR2(20) not null,
+  CODE        VARCHAR2(60),
+  NAME        VARCHAR2(100),
+  PWD         VARCHAR2(32),
+  PWD_DATE    VARCHAR2(10),
+  PRIV_TYPE   NUMBER(4) default 0,
+  DESC        VARCHAR2(255),
+  CORP_ID     VARCHAR2(20),
+  DEPT_ID     VARCHAR2(20),
+  TITLE       VARCHAR2(255),
+  OFFICE_TEL  VARCHAR2(255),
+  HOME_TEL    VARCHAR2(255),
+  MOBILE      VARCHAR2(255),
+  EMAIL       VARCHAR2(255),
+  DESC        VARCHAR2(255),
+  SEX         NUMBER(4) default 0,
+  BIRTHDATE   VARCHAR2(10),
+  STATUS      NUMBER(4) default 0,
+  ERR_COUNT   NUMBER(4) default 0,
+  LOCK_TIME   VARCHAR2(19),
+  STOP_INFO   VARCHAR2(60),
+  SYS_LAST_TIME VARCHAR2(20),
+  SYS_VERSION   NUMBER(10) default 0 not null
+)
+-- Add comments to the table 
+comment on table SYS_USER
+  is '操作员';
+-- Add comments to the columns 
+comment on column SYS_USER.USER_ID
+  is 'ID';
+comment on column SYS_USER.CODE
+  is '登录号';
+comment on column SYS_USER.NAME
+  is '名称';
+comment on column SYS_USER.PWD
+  is '密码';
+comment on column SYS_USER.PWD_DATE
+  is '密码初始日期';
+comment on column SYS_USER.PRIV_TYPE
+  is '级别';
+comment on column SYS_USER.DESC
+  is '描述';
+comment on column SYS_USER.PERSON
+  is '人员Id';
+comment on column SYS_USER.STATUS
+  is '状态';
+comment on column SYS_USER.ERR_COUNT
+  is '密码错误次数';
+comment on column SYS_USER.LOCK_TIME
+  is '锁定时间';
+comment on column SYS_USER.STOP_INFO
+  is '停用信息';
+comment on column SYS_USER.SYS_LAST_TIME
+  is '最后修改时间';
+comment on column SYS_USER.SYS_VERSION
+  is '版本号';
+-- Create/Recreate primary, unique and foreign key constraints 
+alter table SYS_USER
+  add primary key (USER_ID)
+  using index 
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Create/Recreate indexes 
+create index I_PERSON_3 on SYS_USER (PERSON)
+  tablespace USERS
+  pctfree 10
+  initrans 2
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+
+  
+  create table SYS_USER
+(
+  ID          VARCHAR2(20) not null,
+  CODE        VARCHAR2(20) not null,
+  NAME        VARCHAR2(100) not null,
+  CORP_ID     VARCHAR2(20),
+  DEPT_ID     VARCHAR2(20),
+  TITLE       VARCHAR2(255),
+  OFFICE_TEL  VARCHAR2(255),
+  HOME_TEL    VARCHAR2(255),
+  MOBILE      VARCHAR2(255),
+  EMAIL       VARCHAR2(255),
+  DESC        VARCHAR2(255),
+  SEX         NUMBER(4) default 0,
+  BIRTHDATE   VARCHAR2(10),
+  STATUS      NUMBER(4) default 0,
+  STOP_INFO   VARCHAR2(60),
+  USER_KIND   NUMBER(2) default 0,
+  UNICODE     VARCHAR2(50),
+  SYS_LAST_TIME VARCHAR2(20),
+  SYS_VERSION   NUMBER(10) default 0 not null
+)
+tablespace USERS
+  pctfree 10
+  initrans 1
+  maxtrans 255
+  storage
+  (
+    initial 64K
+    next 1M
+    minextents 1
+    maxextents unlimited
+  );
+-- Add comments to the table 
+comment on table SYS_USER
+  is '人员';
+-- Add comments to the columns 
+comment on column SYS_USER.ID
+  is 'ID';
+comment on column SYS_USER.CODE
+  is '编码';
+comment on column SYS_USER.NAME
+  is '姓名';
+comment on column SYS_USER.CORP_ID
+  is '机构';
+comment on column SYS_USER.DEPT_ID
+  is '部门';
+comment on column SYS_USER.TITLE
+  is '称谓';
+comment on column SYS_USER.OFFICE_TEL
+  is '办公电话';
+comment on column SYS_USER.HOME_TEL
+  is '住宅电话';
+comment on column SYS_USER.MOBILE
+  is '手机';
+comment on column SYS_USER.EMAIL
+  is '电子邮箱';
+comment on column SYS_USER.DESC
+  is '备注';
+comment on column SYS_USER.SEX
+  is '性别';
+comment on column SYS_USER.BIRTHDATE
+  is '出生日期';
+comment on column SYS_USER.STATUS
+  is '状态';
+comment on column SYS_USER.STOP_INFO
+  is '停用信息';
+comment on column SYS_USER.USER_KIND
+  is '人员属性';
+comment on column SYS_USER.UNICODE
+  is '统一编码';
+comment on column SYS_USER.SYS_LAST_TIME
+  is '最后修改时间';
+comment on column SYS_USER.SYS_VERSION
+  is '版本号';
+
+
+<div class="J_TWidget" data-widget-type="Countdown" data-widget-config="{'endTime':'2013-12-31 00:00:00','interval': 1000,'timeRunCls': '.ks-countdown-run','timeUnitCls':{'d': '.ks-d','h': '.ks-h','m': '.ks-m','s': '.ks-s'},'minDigit': 1,'timeEndCls': '.ks-countdown-end'}" style="width: 950px;height:120px;color:#000;text-align:center;font-size:24px;">
+  
+<div class="J_TWidget" data-widget-type="Countdown" data-widget-config="{'endTime':'2013-12-31 00:00:00','interval': 1000,'timeRunCls': '.ks-countdown-run','timeUnitCls':{'d': '.ks-d','h': '.ks-h','m': '.ks-m','s': '.ks-s'},'minDigit': 1,'timeEndCls': '.ks-countdown-end'}" style="width:950px;height:120px;color:#000;text-align:center;font-size:24px;">
+  	<div class="ks-countdown-run">
+  		 <span>距离活动结束还有：</span> <span>天</span> <span>小时</span> <span>分</span> <span>秒</span>
+  	</div>
+  	<div class="ks-countdown-end">
+  		 亲，您来晚啦！活动已结束，您可以关注本店其它活动
+  	</div>
+  	<div style="text-align:center;font-size:18px;">
+  		 <span style="text-decoration:line-through;">原价：99元</span> <span style="color:#F00;font-size:18px;">秒杀价：<span style="font-family:impact;font-size:48px;">9.9</span>元</span>
+  	</div>
+</div>

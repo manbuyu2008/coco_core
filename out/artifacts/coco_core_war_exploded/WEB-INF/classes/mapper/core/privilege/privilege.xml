@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.core.privilege.PrivilegeDao">
+    <resultMap type="privilegeBean" id="privilegeResult">
+        <result property="id" column="id"/>
+        <result property="master" column="master"/>
+        <result property="masterId" column="masterId"/>
+        <result property="menuId" column="menuId"/>
+        <result property="buttons" column="buttons"/>
+        <result property="userId" column="userId"/>
+        <result property="version" column="version"/>
+        <result property="lastTime" column="last_Time"/>
+        <collection property="menuBean" column="menuId" select="com.coco.core.menu.MenuDao.findById"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="privilegeResult">
+		select * from SYS_PRIVILEGE
+ 	</select>
+
+    <select id="findList" parameterType="Map" resultMap="privilegeResult">
+		select  * from SYS_PRIVILEGE     WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                 #{i_id}
+                 </foreach>
+            </if>
+            <if test="master != null and master !='' ">
+                AND master like '%'||#{master}||'%'
+            </if>
+            <if test="masterId != null and masterId !=''">
+                AND masterId like  '%'||#{masterId}||'%'
+            </if>
+            <if test="menuId != null and menuId !=''">
+                AND menuId like  '%'||#{menuId}||'%'
+            </if>
+            <if test="uId != null and uId !='' and roleId != null and roleId !=''">
+                AND (( master = #{uType} and masterId = #{uId} ) or  ( master = #{roleType} and instr(','||#{roleId}||',',','||masterId||',') >0  ))
+            </if>
+            <if test="_list != null">
+                <foreach collection="_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    (upper(F_PINYIN(${listMap.text})) like  '%'||#{listMap.value}|| '%'
+                    or upper(${listMap.text}) like  '%'||#{listMap.value}|| '%')
+                </foreach>
+            </if>
+            <if test="_eq_list != null">
+                <foreach collection="_eq_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    ${listMap.text} = #{listMap.value}
+                </foreach>
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY master,id
+            </if>
+        </trim>
+    </select>
+    <select id="findRowNo" parameterType="Map" resultType="Integer">
+        SELECT TT.ROWNO FROM(SELECT ROWNUM ROWNO,id from (select * from SYS_PRIVILEGE WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="master != null and master !='' ">
+                AND master like '%'||#{master}||'%'
+            </if>
+            <if test="masterId != null and masterId !=''">
+                AND masterId like  '%'||#{masterId}||'%'
+            </if>
+            <if test="_sql != null and _sql !=''">
+                ${_sql}
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY master,id
+            </if>
+            ) XXX_T
+            ) TT WHERE 1=1
+            <if test="id != null and id !=''">
+              and  TT.id=#{id}
+            </if>
+        </trim>
+    </select>
+    <select id="findListNum" parameterType="Map" resultType="Integer">
+        select count(1) num from SYS_PRIVILEGE  WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="master != null and master !='' ">
+                AND master like '%'||#{master}||'%'
+            </if>
+            <if test="masterId != null and masterId !=''">
+                AND masterId like  '%'||#{masterId}||'%'
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY master,id
+            </if>
+        </trim>
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="privilegeResult">
+		select * from sys_privilege where id=#{id}
+ 	</select>
+
+    <select id="getByCode" parameterType="String" resultMap="privilegeResult">
+		select * from sys_privilege where master=#{master}
+ 	</select>
+
+    <insert id="insert" parameterType="privilegeBean">
+	 <![CDATA[
+   insert into SYS_PRIVILEGE (id, master, masterId, menuId, buttons, userId,LAST_TIME, VERSION)
+        values(#{id},#{master},#{masterId},#{menuId},#{buttons},#{userId},#{lastTime},#{version})
+        ]]>
+ 	</insert>
+
+    <update id="update" parameterType="privilegeBean">
+		update sys_privilege set master= #{master},masterId=#{masterId},
+		menuId=#{menuId},buttons=#{buttons},
+		userId=#{userId},LAST_TIME=#{lastTime},VERSION=${version}+1
+		where id=#{id} and VERSION=${version}
+ 	</update>
+
+    <delete id="delete" parameterType="int">
+		delete from sys_privilege where
+		id=#{id}
+	</delete>
+
+    <delete id="deleteByMaster" parameterType="Map" >
+		delete from sys_privilege where
+		master=#{master}  and   masterId=#{masterId}
+	</delete>
+
+</mapper>

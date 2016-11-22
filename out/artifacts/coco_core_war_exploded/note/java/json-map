@@ -1,0 +1,20 @@
+map转为json的方式为：
+
+
+Java代码  收藏代码
+
+    JSONObject jsonObject = JSONObject.fromMap(productMap);
+
+    或
+
+    JSONObject jsonObject = JSONObject.fromObject(productMap);
+
+
+
+    json转为map的方式为：
+
+    String json = request.getPrarameter("product");//从hidden里面获得json串
+Java代码  收藏代码
+
+    ObjectMapper mapper = new ObjectMapper();
+    Map<String,Object> productMap = mapper.readValue(json);//转成map

@@ -1,0 +1,18 @@
+# DEFAULT CACHE REGION
+#jcs.default=LTCP
+jcs.default=
+jcs.default.cacheattributes=org.apache.jcs.engine.CompositeCacheAttributes
+jcs.default.cacheattributes.MaxObjects=10000
+jcs.default.cacheattributes.MemoryCacheName=org.apache.jcs.engine.memory.lru.LRUMemoryCache
+#开启磁盘缓存，默认为true
+jcs.default.elementattributes.IsSpool = false
+#关闭远程缓存，默认为true
+jcs.default.elementattributes.IsRemote = false
+#关闭横向式的并行缓冲，默认为true
+#jcs.default.elementattributes.IsLateral = true
+jcs.default.elementattributes.IsLateral = false
+jcs.auxiliary.LTCP=org.apache.jcs.auxiliary.lateral.socket.tcp.LateralTCPCacheFactory
+jcs.auxiliary.LTCP.attributes=org.apache.jcs.auxiliary.lateral.socket.tcp.TCPLateralCacheAttributes
+jcs.auxiliary.LTCP.attributes.TransmissionTypeName=TCP
+
+

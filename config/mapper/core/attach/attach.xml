@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.base.attach.AttachManagerDao">
+    <resultMap type="attachBean" id="attachResult">
+        <result property="id" column="id"/>
+        <result property="suffix" column="suffix"/>
+        <result property="path" column="path"/>
+        <result property="name" column="name"/>
+        <result property="fileSize" column="fileSize"/>
+        <result property="userId" column="userId"/>
+        <result property="type" column="type"/>
+        <result property="version" column="version"/>
+        <result property="lastTime" column="last_Time"/>
+    </resultMap>
+	<sql id="selectSqlAll">
+	        SELECT AT.ID, AT.NAME, AT.SUFFIX, AT.USERID, AT.PATH, AT.TYPE, AT.FILESIZE,AT.LAST_TIME,AT.VERSION FROM T_BASE_ATTACH  AT
+	</sql>
+   	<select id="findById" parameterType="String" resultMap="attachResult">
+  	    <include refid="selectSqlAll"/>
+	            WHERE AT.ID = #{id}
+  	</select>
+    <insert id="insert" parameterType="attachBean">
+	 <![CDATA[
+		insert into
+		T_BASE_ATTACH(ID, NAME, SUFFIX, USERID, PATH, TYPE, FILESIZE,LAST_TIME,VERSION)
+        values(#{id},#{name},#{suffix},#{userid},#{path},#{type},#{filesize},#{lastTime},#{version})
+        ]]>
+ 	</insert>
+
+    <update id="update" parameterType="attachBean">
+		update T_BASE_ATTACH set NAME=#{name},SUFFIX=#{SUFFIX},USERID=#{USERID},
+		PATH=#{PATH},TYPE=#{TYPE},FILESIZE=#{FILESIZE},version=#{version}+1,LAST_TIME=#{lastTime}
+		where id=#{id} and  version=#{version}
+ 	</update>
+
+    <delete id="delete" parameterType="int">
+		delete from T_BASE_ATTACH where
+		id=#{id}
+	</delete>
+
+    <select id="findList" parameterType="Map" resultMap="attachResult">
+        <include refid="selectSqlAll"/>    WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="userId != null and userId !='' and userId !='-'">
+                AND userId = #{userId}
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY name,id
+            </if>
+        </trim>
+    </select>
+
+</mapper>

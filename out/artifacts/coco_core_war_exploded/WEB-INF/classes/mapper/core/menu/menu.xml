@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.core.menu.MenuDao">
+    <resultMap type="MenuBean" id="menuResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="levelCode" column="levelCode"/>
+        <result property="levelNum" column="levelNum"/>
+        <result property="parentId" column="parentId"/>
+        <result property="menuOrder" column="menuOrder"/>
+        <result property="isLeaf" column="isLeaf"/>
+        <result property="menuUrl" column="menuUrl"/>
+        <result property="menuIcon" column="menuIcon"/>
+        <result property="buttons" column="buttons"/>
+        <result property="status" column="status"/>
+        <result property="note" column="note"/>
+        <result property="version" column="version"/>
+        <result property="lastTime" column="last_Time"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="menuBean">
+	 <![CDATA[
+		insert into
+		SYS_MENU(id,code,name,levelCode,levelNum,parentId,menuOrder,isLeaf,menuUrl,
+		menuIcon,buttons,status,note,version,LAST_TIME)
+        values(#{id},#{code},#{name},#{levelCode},#{levelNum},#{parentId},#{menuOrder},#{isLeaf},#{menuUrl},
+        #{menuIcon},#{buttons},#{status},#{note},#{version},#{lastTime})
+        ]]>
+ 	</insert>
+
+    <update id="update" parameterType="menuBean">
+		update SYS_MENU set code= #{code},
+		name=#{name},levelCode=#{levelCode},levelNum=#{levelNum},
+		parentId=#{parentId},menuOrder=#{menuOrder},isLeaf=#{isLeaf},menuUrl=#{menuUrl},
+		menuIcon=#{menuIcon},buttons=#{buttons},status=#{status},
+		note=#{note},version=#{version}+1,LAST_TIME=#{lastTime}
+		where id=#{id} and  version=#{version}
+ 	</update>
+
+    <delete id="delete" parameterType="int">
+		delete from SYS_MENU where
+		id=#{id}
+	</delete>
+
+    <select id="findAll" resultMap="menuResult">
+		select * from SYS_MENU
+ 	</select>
+
+    <select id="findById" parameterType="String" resultMap="menuResult">
+		select * from SYS_MENU where id=#{id}
+ 	</select>
+
+    <select id="getUserMenu" parameterType="Map" resultMap="menuResult">
+        select * from SYS_MENU where (parentId!='-'or parentId!='' or parentId is not null)
+        <trim  suffixOverrides="AND | OR">
+            <if test="userId != null and userId !=''">
+                AND 1=1 /*待补充*/
+            </if>
+            <if test="_list != null">
+                <foreach collection="_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    (upper(F_PINYIN(${listMap.text})) like  '%'||#{listMap.value}|| '%'
+                    or upper(${listMap.text}) like  '%'||#{listMap.value}|| '%')
+                </foreach>
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY LEVELNUM,MENUORDER,CODE,ID
+            </if>
+        </trim>
+ 	</select>
+
+    <select id="findIdByContent" parameterType="String" resultMap="menuResult">
+		select * from SYS_MENU where 1=1
+		and ((upper(F_PINYIN(code)) like  '%'||upper(#{txt})|| '%'
+                    or upper(code) like  '%'||upper(#{txt})|| '%')
+                    or (upper(F_PINYIN(name)) like  '%'||upper(#{txt})|| '%'
+                    or upper(name) like  '%'||upper(#{txt})|| '%'))
+                    and rownum=1
+ 	</select>
+
+    <select id="findList" parameterType="Map" resultMap="menuResult">
+		select * from SYS_MENU where 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="code != null and code !='' ">
+                AND code like '%'||#{code}||'%'
+            </if>
+            <if test="isNeedAdmin != null and isNeedAdmin !='' ">
+                AND name not in ('菜单管理','操作按钮管理')
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="oneMenuSelect != null and oneMenuSelect !='' ">
+                and
+                ((#{oneMenuSelect}='1'  AND id = #{menu})
+                or (#{oneMenuSelect}='0'
+                AND INSTR(#{levelCodeSeparator}||LEVELCODE||#{levelCodeSeparator},#{levelCodeSeparator}||#{menu}||#{levelCodeSeparator})>0 ))
+            </if>
+            <if test="parentId != null and parentId !=''">
+                AND parentId = #{parentId}
+            </if>
+            <if test="status != null and status !=''  and status !='-'">
+                AND status = #{status}
+            </if>
+            <if test="_list != null">
+                <foreach collection="_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    (upper(F_PINYIN(${listMap.text})) like  '%'||#{listMap.value}|| '%'
+                    or upper(${listMap.text}) like  '%'||#{listMap.value}|| '%')
+                </foreach>
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY LEVELNUM,MENUORDER, CODE,ID
+            </if>
+        </trim>
+ 	</select>
+
+    <select id="findListNum" parameterType="Map" resultType="Integer">
+        select count(1) from SYS_MENU where 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="code != null and code !='' ">
+                AND code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="parentId != null and parentId !=''">
+                AND parentId = #{parentId}
+            </if>
+            <if test="status != null and status !=''  and status !='-'">
+                AND status = #{status}
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY LEVELNUM,MENUORDER, CODE,ID
+            </if>
+        </trim>
+    </select>
+
+    <select id="getByCode" parameterType="String" resultMap="menuResult">
+		select * from SYS_MENU where code=#{code}
+ 	</select>
+    <select id="findByUrl" parameterType="String" resultMap="menuResult">
+		select * from SYS_MENU where menuUrl like #{url}||'%' and  menuUrl is not null  and rownum=1
+ 	</select>
+</mapper>

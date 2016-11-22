@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.core.button.ButtonDao">
+    <resultMap type="buttonBean" id="buttonResult">
+        <result property="id" column="id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="btnIcon" column="btnIcon"/>
+        <result property="methodName" column="methodName"/>
+        <result property="note" column="note"/>
+        <result property="status" column="status"/>
+        <result property="isCheck" column="isCheck"/>
+        <result property="version" column="version"/>
+        <result property="lastTime" column="last_Time"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="buttonResult">
+		select * from SYS_BUTTON
+ 	</select>
+
+    <select id="findList" parameterType="Map" resultMap="buttonResult">
+		select  SYS_BUTTON.*
+        <if test="hasShowCheck != null and hasShowCheck !='' ">
+           ,case when  instr(','||#{checkButtons}||',',','||id||',')>0 then 1 else 0 end isCheck
+        </if>
+        from SYS_BUTTON     WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                 #{i_id}
+                 </foreach>
+            </if>
+            <if test="code != null and code !='' ">
+                AND code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="status != null and status !='' and status !='-'">
+                AND status = #{status}
+            </if>
+            <if test="_list != null">
+                <foreach collection="_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    (upper(F_PINYIN(${listMap.text})) like  '%'||#{listMap.value}|| '%'
+                    or upper(${listMap.text}) like  '%'||#{listMap.value}|| '%')
+                </foreach>
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY CODE,id
+            </if>
+        </trim>
+    </select>
+    <select id="findRowNo" parameterType="Map" resultType="Integer">
+        SELECT TT.ROWNO FROM(SELECT ROWNUM ROWNO,id from (select * from SYS_BUTTON WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="code != null and code !='' ">
+                AND code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="_sql != null and _sql !=''">
+                ${_sql}
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY CODE,id
+            </if>
+            ) XXX_T
+            ) TT WHERE 1=1
+            <if test="id != null and id !=''">
+              and  TT.id=#{id}
+            </if>
+        </trim>
+    </select>
+    <select id="findListNum" parameterType="Map" resultType="Integer">
+        select count(1) num from SYS_BUTTON  WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="code != null and code !='' ">
+                AND code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND name like  '%'||#{name}||'%'
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY CODE,id
+            </if>
+        </trim>
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="buttonResult">
+		select *
+		from sys_button where id=#{id}
+ 	</select>
+
+    <select id="getByCode" parameterType="String" resultMap="buttonResult">
+		select * from sys_button where code=#{CODE}
+ 	</select>
+
+    <insert id="insert" parameterType="buttonBean">
+	 <![CDATA[
+   insert into SYS_BUTTON (id, code, name, btnIcon, methodName, status, note, LAST_TIME, VERSION)
+        values(#{id},#{code},#{name},#{btnIcon},#{methodName},#{status},#{note},#{lastTime},#{version})
+        ]]>
+ 	</insert>
+
+    <update id="update" parameterType="buttonBean">
+		update sys_button set code= #{code},name=#{name},
+		btnIcon=#{btnIcon},methodName=#{methodName},
+		status=#{status},note=#{note},LAST_TIME=#{lastTime},VERSION=${version}+1
+		where id=#{id} and VERSION=${version}
+ 	</update>
+
+    <delete id="delete" parameterType="int">
+		delete from sys_button where
+		id=#{id}
+	</delete>
+
+</mapper>

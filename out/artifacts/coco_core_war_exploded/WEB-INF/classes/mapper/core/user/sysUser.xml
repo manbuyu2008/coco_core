@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.coco.core.user.UserDao">
+    <resultMap type="userBean" id="userResult">
+        <result property="userId" column="user_id"/>
+        <result property="code" column="code"/>
+        <result property="name" column="name"/>
+        <result property="pwd" column="pwd"/>
+        <result property="pwdDate" column="pwd_Date"/>
+        <result property="dept" column="dept_id"/>
+        <result property="adminDept" column="admin_dept_id"/>
+        <result property="postName" column="postName"/>
+        <result property="officeTel" column="office_Tel"/>
+        <result property="homeTel" column="home_Tel"/>
+        <result property="mobile" column="mobile"/>
+        <result property="email" column="email"/>
+        <result property="desc" column="user_desc"/>
+        <result property="sex" column="sex"/>
+        <result property="privType" column="priv_type"/>
+        <result property="status" column="status"/>
+        <result property="stopTime" column="stopTime"/>
+        <result property="stopInfo" column="stop_Info"/>
+        <result property="errCount" column="err_Count"/>
+        <result property="lockTime" column="lock_Time"/>
+        <result property="version" column="version"/>
+        <result property="lastTime" column="last_Time"/>
+        <collection property="deptBean" column="dept_id" select="com.coco.core.dept.DeptDao.findById"/>
+        <collection property="roleList" column="{userId = user_id}"   javaType="ArrayList"
+                    ofType="userRoleBean"
+                    select="com.coco.core.userRole.UserRoleDao.findList"/>
+    </resultMap>
+    <select id="userLogin" parameterType="userBean" resultMap="userResult">
+		select * from SYS_USER
+		where code=#{username} and pwd=#{password}
+	</select>
+
+    <select id="findAll" resultMap="userResult">
+		select * from SYS_USER
+ 	</select>
+
+    <select id="findList" parameterType="Map" resultMap="userResult">
+		select U.* from SYS_USER U inner join SYS_DEPT T ON U.DEPT_ID= T.ID
+        WHERE 1=1
+
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND U.user_id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                 #{i_id}
+                 </foreach>
+            </if>
+            <if test="deptIds != null ">
+                AND T.id in
+                <foreach collection="deptIds" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="userId != null and userId !='' ">
+                AND U.user_id = #{userId}
+            </if>
+            <if test="code != null and code !='' ">
+                AND U.code like '%'||#{code}||'%'
+            </if>
+            <if test="oneDeptSelect != null and oneDeptSelect !='' ">
+                and
+                ((#{oneDeptSelect}='1'  AND T.id = #{dept})
+                 or (#{oneDeptSelect}='0'
+                AND INSTR(#{levelCodeSeparator}||T.LEVELCODE||#{levelCodeSeparator},#{levelCodeSeparator}||#{dept}||#{levelCodeSeparator})>0 ))
+            </if>
+            <if test="name != null and name !=''">
+                AND U.name like  '%'||#{name}||'%'
+            </if>
+            <if test="status != null and status !='' and status !='-'">
+                AND U.status = #{status}
+            </if>
+            <if test="deptName != null and deptName !=''">
+                AND T.name like  '%'||#{deptName}||'%'
+            </if>
+            <if test="_list != null">
+                <foreach collection="_list" item="listMap" index="i_num"  open="and (" separator=" OR " close=" ) ">
+                    (upper(F_PINYIN(u.${listMap.text})) like  '%'||#{listMap.value}|| '%'
+                    or upper(u.${listMap.text}) like  '%'||#{listMap.value}|| '%')
+                </foreach>
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY T.CODE,U.CODE,U.USER_ID
+            </if>
+        </trim>
+    </select>
+    <select id="findRowNo" parameterType="Map" resultType="Integer">
+        SELECT TT.ROWNO FROM(SELECT ROWNUM ROWNO,user_Id from (select * from SYS_USER U inner join SYS_DEPT T ON U.DEPT_ID= T.ID
+        WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND U.user_id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="deptIds != null ">
+                AND T.id in
+                <foreach collection="deptIds" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="code != null and code !='' ">
+                AND U.code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND U.name like  '%'||#{name}||'%'
+            </if>
+            <if test="deptName != null and deptName !=''">
+                AND T.name like  '%'||#{deptName}||'%'
+            </if>
+            <if test="oneDeptSelect != null and oneDeptSelect !='' ">
+                and
+                ((#{oneDeptSelect}='1'  AND T.id = #{dept})
+                or (#{oneDeptSelect}='0'
+                AND INSTR(#{levelCodeSeparator}||T.LEVELCODE||#{levelCodeSeparator},#{levelCodeSeparator}||#{dept}||#{levelCodeSeparator})>0 ))
+            </if>
+            <if test="_sql != null and _sql !=''">
+                ${_sql}
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY T.CODE,U.CODE,U.USER_ID
+            </if>
+            ) XXX_T
+            ) TT WHERE 1=1
+            <if test="id != null and id !=''">
+              and  TT.user_Id=#{id}
+            </if>
+        </trim>
+    </select>
+    <select id="findListNum" parameterType="Map" resultType="Integer">
+        select count(1) num from SYS_USER U inner join SYS_DEPT T ON U.DEPT_ID= T.ID
+        WHERE 1=1
+        <trim  suffixOverrides="AND | OR">
+            <if test="ids != null ">
+                AND U.user_id in
+                <foreach collection="ids" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="deptIds != null ">
+                AND T.id in
+                <foreach collection="deptIds" item="i_id" index="i_num"  open="(" separator="," close=")">
+                    #{i_id}
+                </foreach>
+            </if>
+            <if test="code != null and code !='' ">
+                AND U.code like '%'||#{code}||'%'
+            </if>
+            <if test="name != null and name !=''">
+                AND U.name like  '%'||#{name}||'%'
+            </if>
+            <if test="deptName != null and deptName !=''">
+                AND T.name like  '%'||#{deptName}||'%'
+            </if>
+            <if test="oneDeptSelect != null and oneDeptSelect !='' ">
+                and
+                ((#{oneDeptSelect}='1'  AND T.id = #{dept})
+                or (#{oneDeptSelect}='0'
+                AND INSTR(#{levelCodeSeparator}||T.LEVELCODE||#{levelCodeSeparator},#{levelCodeSeparator}||#{dept}||#{levelCodeSeparator})>0 ))
+            </if>
+            <if test="strOrder != null and strOrder !=''">
+                ORDER BY ${strOrder}
+            </if>
+            <if test="strOrder == null || strOrder ==''">
+                ORDER BY T.CODE,U.CODE,U.USER_ID
+            </if>
+        </trim>
+    </select>
+
+    <select id="findById" parameterType="String" resultMap="userResult">
+		select *
+		from sys_user where user_id=#{id}
+ 	</select>
+
+    <select id="getByCode" parameterType="String" resultMap="userResult">
+		select *
+		from sys_user where code=#{CODE}
+ 	</select>
+
+    <insert id="insert" parameterType="userBean">
+	 <![CDATA[
+   insert into SYS_USER (USER_ID, CODE, NAME, PWD, PWD_DATE,
+    DEPT_ID, ADMIN_DEPT_ID, POSTNAME, OFFICE_TEL, HOME_TEL, MOBILE, EMAIL,
+     USER_DESC, SEX,priv_type, BIRTHDATE, STATUS, ERR_COUNT, LOCK_TIME, STOP_INFO, LAST_TIME, VERSION)
+        values(#{id},#{code},#{name},#{pwd},#{pwdDate},#{dept},#{adminDept},#{postName},
+#{officeTel},#{homeTel},#{mobile},#{email},#{desc},#{sex},#{privType},#{birthdate},#{status},
+#{errCount},#{lockTime},#{stopInfo},#{lastTime},#{version})
+        ]]>
+ 	</insert>
+
+    <update id="update" parameterType="userBean">
+		update sys_user set code= #{code},
+		name=#{name},
+		DEPT_ID=#{dept},ADMIN_DEPT_ID=#{adminDept},
+		POSTNAME=#{postName},OFFICE_TEL=#{officeTel},
+		HOME_TEL=#{homeTel},MOBILE=#{mobile},
+		EMAIL=#{email},USER_DESC=#{desc},
+		SEX=#{sex},BIRTHDATE=#{birthdate},
+		STATUS=#{status},STOP_INFO=#{stopInfo},STOPTIME=#{stopTime},
+		LAST_TIME=#{lastTime},VERSION=${version}+1
+		where user_id=#{id} and VERSION=${version}
+ 	</update>
+
+    <update id="pwdChg" parameterType="java.util.HashMap">
+		update sys_user set pwd=#{pwd} where user_id=#{id}
+ 	</update>
+
+    <delete id="delete" parameterType="int">
+		delete from sys_user where
+		user_id=#{id}
+	</delete>
+
+</mapper>
